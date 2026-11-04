@@ -226,9 +226,8 @@ footer {
   <h2>Your estimate</h2>
 
   <div class="summary">
-    <div class="muted">Care price per day</div>
+    <div class="muted">Price per day (including travel)</div>
     <div class="big" id="daily">$0.00</div>
-    <div class="muted">Before the one-time travel charge</div>
   </div>
 
   <div style="margin-top:18px">
@@ -258,7 +257,7 @@ footer {
     </div>
 
     <div class="line">
-      <span>Travel (once per booking)</span>
+      <span>Travel ($5 per day)</span>
       <strong id="travelCost"></strong>
     </div>
 
@@ -283,14 +282,14 @@ footer {
 
 <script>
 /* =============================================
-   prices prices prices!
+   EDIT THOSE DANG PRICES HERE
    ============================================= */
 
 const RATES = {
   activePerHour: 12,
   passivePerHour: 4,
   overnightPerNight: 35,
-  travelPerBooking: 6,
+  travelPerDay: 5,
   extraPetPercent: 0.25,
   holidayPercent: 0.25,
   maxDaytimeHours: 7
@@ -308,7 +307,7 @@ $('rateDescription').textContent =
   `Rates: ${money(RATES.activePerHour)}/hr active · ` +
   `${money(RATES.passivePerHour)}/hr passive · ` +
   `${money(RATES.overnightPerNight)}/night · ` +
-  `${money(RATES.travelPerBooking)} travel per booking · ` +
+  `${money(RATES.travelPerDay)} travel per day · ` +
   `${RATES.extraPetPercent * 100}% per additional pet · ` +
   `${RATES.holidayPercent * 100}% holiday surcharge. ` +
   `Maximum ${RATES.maxDaytimeHours} daytime care hours/day.`;
@@ -361,29 +360,27 @@ $('calculate').addEventListener('click', () => {
   const holidayCost = holiday
     ? (care + petCost) * RATES.holidayPercent
     : 0;
+  const travelCost = RATES.travelPerDay * days;
 
   const total =
-    care + petCost + holidayCost + RATES.travelPerBooking;
+    care + petCost + holidayCost + travelCost;
 
   $('activeCost').textContent = money(activeCost);
   $('passiveCost').textContent = money(passiveCost);
   $('nightCost').textContent = money(nightCost);
   $('petCost').textContent = money(petCost);
   $('holidayCost').textContent = money(holidayCost);
-  $('travelCost').textContent = money(RATES.travelPerBooking);
-
-  $('daily').textContent =
-    money((care + petCost + holidayCost) / days);
+  $('travelCost').textContent = money(travelCost);
+  $('daily').textContent = money(total / days);
 
   $('total').textContent = money(total);
-
 
   $('details').textContent =
     `${days} day(s), ${pets} pet(s), ` +
     `${a} active and ${p} passive hours per day` +
     `${overnight ? ', with one overnight per day' : ''}` +
     `${holiday ? ', holiday pricing' : ''}. ` +
-    `Travel is charged once for the booking.`;
+    `Travel is charged once per day.`;
 
   $('result').classList.add('show');
 
